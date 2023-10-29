@@ -19,96 +19,25 @@ export default function render(
         <html>
         <head>
             <meta charset="utf-8">
-            <script src="/node_modules/requirejs/require.js"></script>
-            <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
-            <link rel="stylesheet" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
-            <title>H5P NodeJs Demo</title>
+            <title>H5P</title>
         </head>
         <body>
-            <div class="container">
-                <h1>H5P NodeJs Demo</h1>
-                <div class="alert alert-warning">This demo is for debugging and demonstration purposes only and not suitable for production use!</div>                
-                <h2>
-                    <span class="fa fa-file"></span> Existing content
-                </h2>
-                <a class="btn btn-primary my-2" href="${
-                    editor.config.baseUrl
-                }/new"><span class="fa fa-plus-circle m-2"></span>Create new content</a>
-                <div class="list-group">
-                ${contentObjects
-                    .map(
-                        (content) =>
-                            `<div class="list-group-item">
-                                <div class="d-flex w-10">
-                                    <div class="me-auto p-2 align-self-center">
-                                        <a href="${editor.config.baseUrl}${editor.config.playUrl}/${content.id}">
-                                            <h5>${content.content.title}</h5>
-                                        </a>
-                                        <div class="small d-flex">                                            
-                                            <div class="me-2">
-                                                <span class="fa fa-book-open"></span>
-                                                ${content.content.mainLibrary}
-                                            </div>
-                                            <div class="me-2">
-                                                <span class="fa fa-fingerprint"></span>
-                                                ${content.id}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="p-2">                                        
-                                        <a class="btn btn-secondary" href="${editor.config.baseUrl}/edit/${content.id}">
-                                            <span class="fa fa-pencil-alt m-1"></span>
-                                            edit
-                                        </a>
-                                    </div>
-                                    <div class="p-2">
-                                        <a class="btn btn-info" href="${editor.config.baseUrl}${editor.config.downloadUrl}/${content.id}">
-                                            <span class="fa fa-file-download m-1"></span>
-                                            download
-                                        </a>
-                                    </div>
-                                    <div class="p-2">
-                                        <a class="btn btn-info" href="${editor.config.baseUrl}/html/${content.id}">
-                                            <span class="fa fa-file-download m-1"></span>
-                                            download HTML
-                                        </a>
-                                    </div>
-                                    <div class="p-2">
-                                        <a class="btn btn-danger" href="${editor.config.baseUrl}/delete/${content.id}">
-                                            <span class="fa fa-trash-alt m-1"></span>
-                                            delete
-                                        </a>
-                                    </div>
-                                </div>                                
-                            </div>`
-                    )
-                    .join('')}
-                </div>
-                <hr/>
-                <div id="content-type-cache-container"></div>
-                <hr/>
-                <div id="library-admin-container"></div>
-            </div>
-
             <script>
-                requirejs.config({
-                    baseUrl: "assets/js",
-                    paths: {
-                        react: '/node_modules/react/umd/react.development',
-                        "react-dom": '/node_modules/react-dom/umd/react-dom.development'
-                    }
-                });
-                requirejs([
-                    "react",
-                    "react-dom",
-                    "./client/LibraryAdminComponent.js",
-                    "./client/ContentTypeCacheComponent.js"], 
-                    function (React, ReactDOM, LibraryAdmin, ContentTypeCache) {
-                        const libraryAdminContainer = document.querySelector('#library-admin-container');
-                        ReactDOM.render(React.createElement(LibraryAdmin.default, { endpointUrl: 'h5p/libraries' }), libraryAdminContainer);
-                        const contentTypeCacheContainer = document.querySelector('#content-type-cache-container');
-                        ReactDOM.render(React.createElement(ContentTypeCache.default, { endpointUrl: 'h5p/content-type-cache' }), contentTypeCacheContainer);
-                    });                
+                window.onload = function() {
+                    let h5phref = '';
+                    let backto = location.hash.replace('#','');
+                    let h5pWindow = open('https://testh5p.onrender.com/h5p/new', '', 'titlebar=no,toolbar=no,status=no,scrollbars=no,menubar=no,top=100,left=240,width=950,height=600');
+                    h5pWindow.onload = function() {
+                        let checkInterval = setInterval(function() {
+                            if (h5pWindow.location.href !== 'https://testh5p.onrender.com/h5p/new') {
+                                h5phref = h5pWindow.location.href;
+                                clearInterval(checkInterval);
+                                h5pWindow.close();
+                                window.opener.postMessage(h5phref, backto);
+                            }
+                        }, 500);
+                    };
+                }
             </script>
         </body>
         `);
